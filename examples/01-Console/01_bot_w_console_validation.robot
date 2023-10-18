@@ -6,7 +6,7 @@ Resource    ../../resources/asserts.robot
 
 
 *** Variables ***
-${URL}                              https://www.marca.com/
+${URL}                              https://www.invap.com.ar/
 
 ${ERR_COUNT}                        0
 ${WARN_COUNT}                       0
