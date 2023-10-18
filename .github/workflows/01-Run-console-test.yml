@@ -34,7 +34,7 @@ jobs:
         run: |
           robot \
             --outputdir reports \
-            --variable URL=${{ inputs.url }} \
+            --variable URL:${{ inputs.url }} \
             examples/01-Console/01_bot_w_console_validation.robot
 
       - uses: actions/upload-artifact@v3
