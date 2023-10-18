@@ -6,7 +6,7 @@ Resource    ../../resources/ai.robot
 
 
 *** Variables ***
-${URL}      %{URL=https://dronjo.wopee.io/sign-in.html}
+${URL}      %{URL:https://dronjo.wopee.io/sign-in.html}
 
 
 *** Test Cases ***
