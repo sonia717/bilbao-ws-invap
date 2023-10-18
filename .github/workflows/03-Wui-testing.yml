@@ -1,0 +1,67 @@
+name: 03 👁️👁️ Testing with WatchUI
+run-name: "03 👁️👁️ WatchUI testing, mode: ${{ inputs.testing_mode }}, tests: ${{ inputs.tests }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      testing_mode:
+        type: choice
+        description: "What tests to execute?"
+        required: true
+        default: automation
+        options:
+          - automation
+          - autonomous
+      tests:
+        type: number
+        description: "Number of tests(only for 'autonomous'):"
+        required: true
+        default: 5
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  example3:
+    name: Visual validation with WatchUI
+
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Installation
+        run: |
+          pip install -r requirements.txt
+          rfbrowser init
+
+      - name: Testing (automation)
+        if: inputs.testing_mode == 'automation'
+        run: |
+          robot \
+            --outputdir reports \
+            examples/03-WatchUI/03a_testing_w_WU_validation.robot
+        env:
+          CI: ci
+
+      - name: Testing (autonomous)
+        if: inputs.testing_mode == 'autonomous'
+        run: |
+          robot \
+            --outputdir reports \
+            examples/03-WatchUI/03b_bot_w_WU_validation.robot
+        env:
+          CI: ci
+          TESTS: ${{ inputs.tests }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: example3-run-logs
+          path: reports/
+          retention-days: 10

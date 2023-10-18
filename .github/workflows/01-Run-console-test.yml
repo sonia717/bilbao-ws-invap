@@ -1,0 +1,45 @@
+name: 01 🤖 Browser Console Testing
+run-name: "01 🤖 Status testing bot, SUT: ${{ inputs.url }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "System under test, url:"
+        required: true
+        default: https://dronjo.wopee.io
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  example1:
+    name: Browser console status testing
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Installation
+        run: |
+          pip install -r requirements.txt
+          rfbrowser init
+
+      - name: Testing
+        run: |
+          robot \
+            --outputdir reports \
+            --variable URL=${{ inputs.url }} \
+            examples/01-Console/01_bot_w_console_validation.robot
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: example1-run-logs
+          path: reports/
+          retention-days: 10

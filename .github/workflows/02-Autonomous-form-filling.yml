@@ -1,0 +1,52 @@
+name: 02 🎹 Filling Forms Bot
+run-name: "02 Filling Form Bot, SUT: ${{ inputs.url }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "System under test, url:"
+        required: true
+        default: https://dronjo.wopee.io/sign-in.html
+      openai_api_key:
+        description: "OpenAI API key"
+        required: true
+        default: "Bearer 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"
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  example2:
+    name: Filling forms on the fly with GenAI
+
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Installation
+        run: |
+          pip install -r requirements.txt
+          rfbrowser init
+
+      - name: Testing
+        run: |
+          robot \
+            --outputdir reports \
+            --variable URL=${{ inputs.url }} \
+            examples/02-Forms-fill/02_autonomous_form_filling.robot
+        env:
+          OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: example2-run-logs
+          path: reports/
+          retention-days: 1

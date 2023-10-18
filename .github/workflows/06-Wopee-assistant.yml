@@ -1,0 +1,45 @@
+name: 06 👷🏼 Wopee Assistant Testing
+run-name: "06 👷🏼 Wopee Assistant Testing"
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  example6:
+    name: Visual validation with Wopee Assistant
+
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Installation
+        run: |
+          gh release download --repo autonomous-testing/wopee.rf --archive zip --dir dist
+          pip install dist/*.zip
+          pip install -r requirements.txt
+          rfbrowser init
+        env:
+          GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+
+      - name: Testing
+        run: |
+          robot \
+            --outputdir reports \
+            --listener wopee_rf.listener \
+            examples/06-Wopee-Assistant/06_smoke.robot
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: example6-run-logs
+          path: reports/
+          retention-days: 10
